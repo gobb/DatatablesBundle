@@ -1,0 +1,142 @@
+{% block sg_datatable %}
+
+    {% block sg_datatable_html %}
+
+        <table class="table table-bordered table-hover" id="{{ id }}">
+            <thead>
+                <tr>
+                    {% for th in tableHeaders %}
+                        <th>{{ th }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+    {% endblock %}
+
+    {% block sg_datatable_js %}
+
+        <script>
+
+            $(document).ready(function () {
+
+                var selector = "#{{ id }}";
+
+                var defaults = {
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": "{{ path(sAjaxSource) }}",
+                    "sDom": "<'row'<'span4'l><'span8'f>r>t<'row'<'span3'i><'span9'p>>",
+                    "sPaginationType": "bootstrap",
+                    "oLanguage": {
+                        "sProcessing": "<img src='{{ asset('bundles/sgdatatables/images/loading.gif') }}' style='margin-left: 20px; margin-bottom: 5px;' />" + " Bitte warten...",
+                        "sLengthMenu":"_MENU_ Einträge anzeigen",
+                        "sZeroRecords":"Keine Einträge vorhanden.",
+                        "sInfo":"_START_ bis _END_ von _TOTAL_ Einträgen",
+                        "sInfoEmpty":"0 bis 0 von 0 Einträgen",
+                        "sInfoFiltered":"(gefiltert von _MAX_ Einträgen)",
+                        "sInfoPostFix":"",
+                        "sSearch":"Suche",
+                        "sUrl":"",
+                        "oPaginate": {
+                            "sFirst":"Erster",
+                            "sPrevious":"Zurück",
+                            "sNext":"Nächster",
+                            "sLast":"Letzter"
+                        }
+                    }
+                };
+
+                $.extend(defaults, {
+                    "aoColumns": [
+                        {% for field in fields %}
+
+                            {% if field.mData != null %}
+                                { "mData": "{{ field.mData }}",
+                            {% else %}
+                                { "mData": null,
+                            {% endif %}
+
+                                {% if field.mRender != '' %}
+                                    "mRender": function(data, type, full) {
+                                        return {{ field.mRender }};
+                                    },
+                                {% endif %}
+
+                                "bSortable": "{{ field.bSortable }}",
+
+                                "bSearchable": "{{ field.bSearchable }}",
+
+                                {% if field.sWidth != '' %}
+                                    "sWidth": "{{ field.sWidth }}"
+                                {% endif %}
+                            },
+
+                        {% endfor %}
+                    ]
+                });
+
+                var oTable = $(selector).dataTable(defaults);
+
+            });
+
+        </script>
+
+    {% endblock %}
+
+    {% block sg_datatable_render_functions %}
+
+        <script>
+
+            function render_actions_icons(data, type, full) {
+                if (type != "display")
+                    return data;
+
+                var show_url = strtr(
+                        "{{ path(showPath, {'id': 'replaced_id'}) }}",
+                        {'replaced_id': data}
+                );
+
+                var edit_url = strtr(
+                        "{{ path(editPath, {'id': 'replaced_id'}) }}",
+                        {'replaced_id': data}
+                );
+
+                var delete_url = strtr(
+                        "{{ path(deletePath, {'id': 'replaced_id'}) }}",
+                        {'replaced_id': data}
+                );
+
+                var show = "<a class='btn btn-mini' rel='tooltip' title='Anzeigen' href='" +
+                           show_url +
+                           "'><i class='icon-eye-open'></i></a>";
+
+                var edit = "<a class='btn btn-mini' rel='tooltip' title='Ändern' href='" +
+                           edit_url +
+                           "'><i class='icon-edit'></i></a>";
+
+                var del = "<a class='btn btn-mini' rel='tooltip' title='Löschen' href='" +
+                          delete_url +
+                          "'><i class='icon-trash'></i></a>";
+
+                return show + " " + edit + " " + del;
+            }
+
+            function render_boolean_icons(data, type, full) {
+                if (type != "display")
+                    return data;
+
+                if (data == true) {
+                    return "<i class='icon-ok'></i>";
+                } else {
+                    return "<i class='icon-remove'></i>";
+                }
+            }
+
+        </script>
+
+    {% endblock %}
+
+{% endblock  %}

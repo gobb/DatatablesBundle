@@ -1,0 +1,14 @@
+services:
+
+      sg_datatables.factory:
+          class: Sg\DatatablesBundle\Factory\DatatableFactory
+          arguments: [@twig]
+
+      sg_datatables.twig.extension:
+          class: Sg\DatatablesBundle\Twig\DatatableTwigExtension
+          tags:
+              - { name: twig.extension }
+
+      sg_datatables:
+          class: Sg\DatatablesBundle\Manager\DatatableDataManager
+          arguments: [@doctrine, @service_container]
