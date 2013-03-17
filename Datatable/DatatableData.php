@@ -301,22 +301,23 @@ class DatatableData
 
             for ($i = 0; $i < $this->iColumns; $i++) {
 
-                if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === "true") {
+                if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === 'true') {
 
-                    $param = 'searchGlobal_' . $this->selectFields[$i];
-                    $qbParam = str_replace('.', '_', $param);
-                    $qbParam = str_replace(' ', '_', $qbParam);
+                    // delete "AS" from selectFields[]
+                    $string = $this->selectFields[$i];
+                    $pos = strpos($string, 'AS');
+                    $searchField = substr($string, 0, $pos);
 
-                    $this->logger->info('I just got the logger');
-                    $this->logger->err($param);
-                    $this->logger->err($qbParam);
+                    if ($pos === false) {
+                        $searchField = $this->selectFields[$i];
+                    }
 
                     $orExpr->add($this->qb->expr()->like(
-                        $this->selectFields[$i], //'fos_user.username'
-                        ':' . $qbParam
+                        $searchField,
+                        "?$i"
                     ));
 
-                    $this->qb->setParameter($qbParam, "%" . $this->sSearch . "%");
+                    $this->qb->setParameter($i, "%" . $this->sSearch . "%");
                 }
 
             }
