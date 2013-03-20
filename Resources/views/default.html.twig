@@ -28,7 +28,7 @@
                     "bProcessing": true,
                     "bServerSide": true,
                     "sAjaxSource": "{{ path(sAjaxSource) }}",
-                    "sDom": "<'row'<'span4'l><'span8'f>r>t<'row'<'span3'i><'span9'p>>",
+                    "sDom": "<'row'<'{{ sDomOptions.sDomLength }}'l><'{{ sDomOptions.sDomFilter }}'f>r>t<'row'<'{{ sDomOptions.sDomInfo }}'i><'{{ sDomOptions.sDomPagination }}'p>>",
                     "sPaginationType": "bootstrap",
                     "oLanguage": {
                         "sProcessing": "<img src='{{ asset('bundles/sgdatatables/images/loading.gif') }}' style='margin-left: 20px; margin-bottom: 5px;' />" + " Bitte warten...",

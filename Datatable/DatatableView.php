@@ -10,56 +10,89 @@ use Twig_Environment as Twig;
 abstract class DatatableView
 {
     /**
+     * A Twig instance.
+     *
      * @var Twig
      */
     private $twig;
 
     /**
+     * The Twig template.
+     *
      * @var string
      */
     private $template;
 
     /**
+     * The css sDom parameter for:
+     *  - dataTables_length,
+     *  - dataTables_filter,
+     *  - dataTables_info,
+     *  - pagination
+     *
+     * @var array
+     */
+    private $sDomOptions;
+
+    /**
+     * The table id selector.
+     *
      * @var string
      */
     private $tableId;
 
     /**
+     * Content for the table header cells.
+     *
      * @var array
      */
     private $tableHeaders;
 
     /**
+     * The aoColumns fields.
+     *
      * @var array
      */
     private $fields;
 
     /**
+     * The sAjaxSource path.
+     *
      * @var string
      */
     private $sAjaxSource;
 
     /**
+     * Render actions, true or false,
+     *
      * @var boolean
      */
     private $actions;
 
     /**
+     * The show Path for the entity.
+     *
      * @var string
      */
     private $showPath;
 
-    /*
+    /**
+     * The edit Path for the entity.
+     *
      * @var string
      */
     private $editPath;
 
     /**
+     * The delete Path for the entity.
+     *
      * @var string
      */
     private $deletePath;
 
     /**
+     * Array for custom options.
+     *
      * @var array
      */
     private $customizeOptions;
@@ -78,6 +111,12 @@ abstract class DatatableView
     {
         $this->twig = $twig;
         $this->template = 'SgDatatablesBundle::default.html.twig';
+        $this->sDomOptions = array(
+            'sDomLength' => 'span4',
+            'sDomFilter' => 'span8',
+            'sDomInfo' => 'span3',
+            'sDomPagination' => 'span9'
+        );
 
         $this->tableId = 'sg_datatable';
         $this->tableHeaders = array();
@@ -100,6 +139,8 @@ abstract class DatatableView
     abstract public function build();
 
     /**
+     * Set all options for the twig template.
+     *
      * @return string
      */
     public function createView()
@@ -108,7 +149,8 @@ abstract class DatatableView
         $options['id']               = $this->getTableId();
         $options['sAjaxSource']      = $this->getSAjaxSource();
         $options['tableHeaders']     = $this->getTableHeaders();
-        $options['fields']           = $this->getFieldsProperty();
+        $options['sDomOptions']      = $this->getSDomOptions();
+        $options['fields']           = $this->getFieldsOptions();
         $options['actions']          = $this->getActions();
         $options['showPath']         = $this->getShowPath();
         $options['editPath']         = $this->getEditPath();
@@ -144,11 +186,11 @@ abstract class DatatableView
     }
 
     /**
-     * Get fields property.
+     * Get fields options.
      *
      * @return array
      */
-    private function getFieldsProperty()
+    private function getFieldsOptions()
     {
         $mData = array();
 
@@ -169,6 +211,45 @@ abstract class DatatableView
         }
 
         return $mData;
+    }
+
+
+    //-------------------------------------------------
+    // sDom functions
+    //-------------------------------------------------
+
+    /**
+     * @param array $sDomOptions
+     *
+     * @throws \Exception
+     */
+    public function setSDomOptions($sDomOptions)
+    {
+        if (!$sDomOptions['sDomLength']) {
+            throw new \Exception('The option "sDomLength" must be set.');
+        };
+
+        if (!$sDomOptions['sDomFilter']) {
+            throw new \Exception('The option "sDomFilter" must be set.');
+        };
+
+        if (!$sDomOptions['sDomInfo']) {
+            throw new \Exception('The option "sDomInfo" must be set.');
+        };
+
+        if (!$sDomOptions['sDomPagination']) {
+            throw new \Exception('The option "sDomPagination" must be set.');
+        };
+
+        $this->sDomOptions = $sDomOptions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSDomOptions()
+    {
+        return $this->sDomOptions;
     }
 
 
