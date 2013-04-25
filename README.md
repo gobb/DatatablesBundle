@@ -2,11 +2,15 @@
 
 ## Installation
 
-Neben dem DatatablesBundle werden noch jQuery, das DataTables-Plugin und Bootstrap benötigt.
+Neben dem DatatablesBundle werden noch
+* jQuery,
+* das DataTables-Plugin,
+* Bootstrap und
+* das JMSSerializerBundle benötigt.
 
 Dazu wird die composer.json erweitert:
 
-```twig
+```js
 {
     "repositories": {
         "datatables": {
@@ -39,9 +43,33 @@ Dazu wird die composer.json erweitert:
         "jquery/jquery": "2.0.0",
         "datatables/datatables": "1.9.4",
         "twitter/bootstrap": "v2.3.1",
+        "jms/serializer-bundle": "*",
         "sg/datatablesbundle": "dev-master"
     },
 }
+```
+
+Den Download starten mit:
+
+``` bash
+$ php composer.phar update
+```
+
+## Bundles aktivieren
+
+```php
+<?php
+
+    // app/AppKernel.php
+
+    public function registerBundles()
+    {
+        $bundles = array(
+
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new Sg\DatatablesBundle\SgDatatablesBundle(),
+        );
+    }
 ```
 
 ## Assetic konfigurieren
@@ -127,127 +155,89 @@ assetic:
 {% endblock %}
 ```
 
-## Anwendungsbeispiel
+## Ein Anwendungsbeispiel
 
 ### Controller
 
 ```php
-/**
- * @Route("/draft", name="recipe_draft_admin")
- * @Template("SgRecipeBundle:Admin/RecipeAdmin:index.html.twig")
- *
- * @return array
- */
-public function draftAction()
-{
-    /**
-     * @var \Sg\DatatablesBundle\Factory\DatatableFactory $factory
-     */
-    $factory = $this->get('sg_datatables.factory');
+<?php
+
+    // PostController.php
 
     /**
-     * @var \Sg\DatatablesBundle\Datatable\DatatableView $datatableView
+     * Lists all Post entities.
+     *
+     * @Route("/", name="post")
+     * @Method("GET")
+     * @Template()
+     *
+     * @return array
      */
-    $datatableView = $factory->getTable('Sg\RecipeBundle\Datatables\RecipeDraftAdminDatatable');
+    public function indexAction()
+    {
+        /**
+         * @var \Sg\DatatablesBundle\Factory\DatatableFactory $factory
+         */
+        $factory = $this->get('sg_datatables.factory');
 
-    return array(
-        'title' => 'Rezeptentwürfe',
-        'datatable' => $datatableView,
-    );
-}
+        /**
+         * @var \Sg\DatatablesBundle\Datatable\DatatableView $datatableView
+         */
+        $datatableView = $factory->getTable('Sg\AppBundle\Datatables\PostDatatable');
 
-/**
- * @Route("/draft/results", name="recipe_draft_admin_results")
- *
- * @return array
- */
-public function draftResultsAction()
-{
+        return array(
+            'datatable' => $datatableView
+        );
+    }
+
     /**
-     * @var \Sg\DatatablesBundle\Datatable\DatatableData $datatable
+     * @Route("/results", name="post_results")
+     *
+     * @return array
      */
-    $datatable = $this->get('sg_datatables')->getDatatable('SgRecipeBundle:Recipe');
+    public function resultsAction()
+    {
+        /**
+         * @var \Sg\DatatablesBundle\Datatable\DatatableData $datatable
+         */
+        $datatable = $this->get('sg_datatables')->getDatatable('SgAppBundle:Post');
 
-    /**
-     * @var \Doctrine\ORM\QueryBuilder $qb
-     */
-    $callbackFunction =
-
-        function($qb) {
-
-            $andExpr = $qb->expr()->andX();
-            $andExpr->add($qb->expr()->eq('recipe.approved', '0'));
-            $andExpr->add($qb->expr()->eq('recipe.private', '0'));
-            $andExpr->add($qb->expr()->eq('recipe.isPublished', '0'));
-            $qb->andWhere($andExpr);
-
-        };
-
-    $datatable->addWhereBuilderCallback($callbackFunction);
-
-    return $datatable->getSearchResults();
-}
-```
-
-### Associations
-
-If the field contains a association is the mapping as follows:
-
-new Field(sourceField + underscore + targetField);
-
-**Example:**
-```php
-$authorField = new Field('createdBy_username');
+        return $datatable->getSearchResults();
+    }
 ```
 
 ### DatatableView class
 
 ```php
-class RecipeDraftAdminDatatable extends DatatableView
+
+// PostDatatable.php
+
+<?php
+
+namespace Sg\AppBundle\Datatables;
+
+use Sg\DatatablesBundle\Datatable\DatatableView;
+use Sg\DatatablesBundle\Datatable\Field;
+
+/**
+ * Post datatable view class.
+ */
+class PostDatatable extends DatatableView
 {
     /**
      * {@inheritdoc}
      */
     public function build()
     {
-        $this->setTableId('recipe_draft_admin_datatable');
-        $this->setSAjaxSource('recipe_draft_admin_results');
+        $this->setTableId('post_datatable');
+        $this->setSAjaxSource('post_results');
 
         $this->setTableHeaders(array(
-            'Titel',
-            'Autor',
-            'Entwurf',
-            'Privat',
-            'Veröffentlicht',
-            'Kommentierbar',
-            '',
-            ''
-        ));
+                'Titel',
+                ''
+            ));
 
         $titleField = new Field('title');
-
-        $authorField = new Field('createdBy_username');
-        $authorField->setSWidth('100');
-
-        $draftField = new Field('approved');
-        $draftField->setBSearchable('false');
-        $draftField->setSWidth('82');
-
-        $privateField = new Field('private');
-        $privateField->setBSearchable('false');
-        $privateField->setSWidth('82');
-
-        $publishedField = new Field('isPublished');
-        $publishedField->setBSearchable('false');
-        $publishedField->setSWidth('120');
-
-        $commentableField = new Field('isCommentable');
-        $commentableField->setBSearchable('false');
-        $commentableField->setSWidth('120');
-
-        $publishedActionField = new Field(null);
-        $publishedActionField->setSWidth('28');
-        $publishedActionField->setMRender("render_recipe_publish_icon(data, type, full)");
 
         $idField = new Field('id');
         $idField->setBSearchable('false');
@@ -256,17 +246,11 @@ class RecipeDraftAdminDatatable extends DatatableView
         $idField->setSWidth('92');
 
         $this->addField($titleField);
-        $this->addField($authorField);
-        $this->addField($draftField);
-        $this->addField($privateField);
-        $this->addField($publishedField);
-        $this->addField($commentableField);
-        $this->addField($publishedActionField);
         $this->addField($idField);
 
-        $this->setShowPath('recipe_show_admin');
-        $this->setEditPath('recipe_edit_admin');
-        $this->setDeletePath('recipe_delete_admin');
+        $this->setShowPath('post_show');
+        $this->setEditPath('post_edit');
+        $this->setDeletePath('post_delete');
     }
 }
 ```
@@ -274,5 +258,13 @@ class RecipeDraftAdminDatatable extends DatatableView
 ### View
 
 ```twig
-{{ datatable_render(datatable) }}
+{# index.html.twig #}
+
+{% extends 'SgAppBundle::layout.html.twig' %}
+
+{% block body %}
+
+    {{ datatable_render(datatable) }}
+
+{% endblock %}
 ```
