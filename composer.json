@@ -1,0 +1,40 @@
+{
+    "name": "sg/datatables-bundle",
+    "description": "Symfony2 Datatables For Doctrine Entities",
+    "keywords": ["Symfony2", "Datatables"],
+    "homepage": "https://github.com/stwe/DatatablesBundle",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "stwe"
+        }
+    ],
+    "repositories": {
+        "datatables": {
+            "type": "package",
+            "package": {
+                "name": "DataTables/DataTables",
+                "version": "1.9.4",
+                "source": {
+                    "url": "git://github.com/DataTables/DataTables.git",
+                    "type": "git",
+                    "reference": "origin/1_9"
+                }
+            }
+        }
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "DataTables/DataTables": "1.9.*",
+        "twitter/bootstrap": "v2.3.1",
+        "components/jquery": "1.9.1"
+    },
+    "target-dir": "Sg/DatatablesBundle",
+    "autoload": {
+        "psr-0": {
+            "Sg\\DatatablesBundle": ""
+        }
+    }
+}
+
