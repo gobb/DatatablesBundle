@@ -1,30 +1,133 @@
 # DatatablesBundle
 
+## Installation
 
-## Config layout.html.twig
+Neben dem DatatablesBundle werden noch jQuery, das DataTables-Plugin und Bootstrap benötigt.
 
-- [Add twitter/bootstrap to your layout](https://github.com/twitter/bootstrap).
-
-- Add DataTables v1.9.4 plug-in to your layout:
+Dazu wird die composer.json erweitert:
 
 ```twig
+{
+    "repositories": {
+        "datatables": {
+            "type": "package",
+            "package": {
+                "name": "datatables/datatables",
+                "version": "1.9.4",
+                "source": {
+                    "url": "git://github.com/DataTables/DataTables.git",
+                    "type": "git",
+                    "reference": "origin/1_9"
+                }
+            }
+        },
+        "jquery": {
+            "type": "package",
+            "package": {
+                "name": "jquery/jquery",
+                "version": "2.0.0",
+                "dist": {
+                    "url": "http://code.jquery.com/jquery-2.0.0.min.js",
+                    "type": "file"
+                }
+            }
+        }
+    },
+
+    "require": {
+
+        "jquery/jquery": "2.0.0",
+        "datatables/datatables": "1.9.4",
+        "twitter/bootstrap": "v2.3.1",
+        "sg/datatablesbundle": "dev-master"
+    },
+}
+```
+
+## Assetic konfigurieren
+
+Alle CSS und JavaScript Dateien können dann mit Assetic eingebunden werden.
+
+Ein Beispiel:
+
+```twig
+{# app/Resources/base.html.twig #}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block javascripts %}{% endblock %}
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>
+```
+
+```yml
+## config.yml ##
+
+assetic:
+    debug:          %kernel.debug%
+    use_controller: false
+    bundles:        [ SgAppBundle ]
+    #java: /usr/bin/java
+    filters:
+        cssrewrite: ~
+        #closure:
+        #    jar: %kernel.root_dir%/Resources/java/compiler.jar
+        #yui_css:
+        #    jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
+    assets:
+        jquery_js:
+            inputs:
+                - '%kernel.root_dir%/../vendor/jquery/jquery/jquery-2.0.0.min.js'
+        bootstrap_js:
+            inputs:
+                - '%kernel.root_dir%/../vendor/twitter/bootstrap/docs/assets/js/bootstrap.min.js'
+        datatables_js:
+            inputs:
+                - '%kernel.root_dir%/../vendor/datatables/datatables/media/js/jquery.dataTables.js'
+        datatablesbundle_js:
+            inputs:
+                - '%kernel.root_dir%/../vendor/sg/datatablesbundle/Sg/DatatablesBundle/Resources/public/js/dataTables_bootstrap.js'
+                - '%kernel.root_dir%/../vendor/sg/datatablesbundle/Sg/DatatablesBundle/Resources/public/js/strtr.js'
+        bootstrap_css:
+            inputs:
+                - '%kernel.root_dir%/../vendor/twitter/bootstrap/docs/assets/css/bootstrap.css'
+        datatablesbundle_css:
+            inputs:
+                - '%kernel.root_dir%/../vendor/sg/datatablesbundle/Sg/DatatablesBundle/Resources/public/css/dataTables_bootstrap.css'
+```
+
+```twig
+{# src/Sg/AppBundle/Resources/views/layout.html.twig #}
+
+{% extends '::base.html.twig' %}
+
+{% block title %}AppBundle{% endblock %}
+
 {% block javascripts %}
-
-    <script src="{{ asset('bundles/sgdatatables/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('bundles/sgdatatables/js/dataTables_bootstrap.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('bundles/sgdatatables/js/strtr.js') }}" type="text/javascript"></script>
-
+    {% javascripts '@jquery_js' '@bootstrap_js' '@datatables_js' '@datatablesbundle_js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}
 
 {% block stylesheets %}
+    {% stylesheets '@bootstrap_css' '@datatablesbundle_css' %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
 
-    <link href="{{ asset('bundles/sgdatatables/css/dataTables_bootstrap.css') }}" rel="stylesheet" type="text/css" />
-
+{% block body%}
 {% endblock %}
 ```
 
-
-## Example
+## Anwendungsbeispiel
 
 ### Controller
 
