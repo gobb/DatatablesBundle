@@ -10,36 +10,8 @@
             "name": "stwe"
         }
     ],
-    "repositories": {
-        "datatables": {
-            "type": "package",
-            "package": {
-                "name": "datatables/datatables",
-                "version": "1.9.4",
-                "source": {
-                    "url": "git://github.com/DataTables/DataTables.git",
-                    "type": "git",
-                    "reference": "origin/1_9"
-                }
-            }
-        },
-        "jquery": {
-            "type": "package",
-            "package": {
-                "name": "jquery/jquery",
-                "version": "2.0.0",
-                "dist": {
-                    "url": "http://code.jquery.com/jquery-2.0.0.min.js",
-                    "type": "file"
-                }
-            }        
-        }
-    },
     "require": {
-        "php": ">=5.3.0",
-        "jquery/jquery": "2.0.0",
-        "datatables/datatables": "1.9.4",
-        "twitter/bootstrap": "v2.3.1"
+        "php": ">=5.3.0"
     },
     "target-dir": "Sg/DatatablesBundle",
     "autoload": {
