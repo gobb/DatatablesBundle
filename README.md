@@ -214,45 +214,45 @@ assetic:
 
 <?php
 
-namespace Sg\AppBundle\Datatables;
+    namespace Sg\AppBundle\Datatables;
 
-use Sg\DatatablesBundle\Datatable\DatatableView;
-use Sg\DatatablesBundle\Datatable\Field;
+    use Sg\DatatablesBundle\Datatable\DatatableView;
+    use Sg\DatatablesBundle\Datatable\Field;
 
-/**
- * Post datatable view class.
- */
-class PostDatatable extends DatatableView
-{
     /**
-     * {@inheritdoc}
+     * Post datatable view class.
      */
-    public function build()
+    class PostDatatable extends DatatableView
     {
-        $this->setTableId('post_datatable');
-        $this->setSAjaxSource('post_results');
+        /**
+         * {@inheritdoc}
+         */
+        public function build()
+        {
+            $this->setTableId('post_datatable');
+            $this->setSAjaxSource('post_results');
 
-        $this->setTableHeaders(array(
-                'Titel',
-                ''
-            ));
+            $this->setTableHeaders(array(
+                    'Titel',
+                    ''
+                ));
 
-        $titleField = new Field('title');
+            $titleField = new Field('title');
 
-        $idField = new Field('id');
-        $idField->setBSearchable('false');
-        $idField->setBSortable('false');
-        $idField->setMRender("render_actions_icons(data, type, full)");
-        $idField->setSWidth('92');
+            $idField = new Field('id');
+            $idField->setBSearchable('false');
+            $idField->setBSortable('false');
+            $idField->setMRender("render_actions_icons(data, type, full)");
+            $idField->setSWidth('92');
 
-        $this->addField($titleField);
-        $this->addField($idField);
+            $this->addField($titleField);
+            $this->addField($idField);
 
-        $this->setShowPath('post_show');
-        $this->setEditPath('post_edit');
-        $this->setDeletePath('post_delete');
+            $this->setShowPath('post_show');
+            $this->setEditPath('post_edit');
+            $this->setDeletePath('post_delete');
+        }
     }
-}
 ```
 
 ### View
