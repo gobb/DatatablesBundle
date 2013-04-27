@@ -4,7 +4,6 @@
 
 Neben dem DatatablesBundle werden noch
 * jQuery,
-* das DataTables-Plugin,
 * Bootstrap und
 * das JMSSerializerBundle benötigt.
 
@@ -18,14 +17,15 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
 {% block javascripts %}
     <script src="{{ asset('bundles/sgapp/js/jquery-2.0.0.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bundles/sgapp/js/bootstrap.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('bundles/sgapp/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
 
+    <script src="{{ asset('bundles/sgdatatables/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bundles/sgdatatables/js/dataTables_bootstrap.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bundles/sgdatatables/js/strtr.js') }}" type="text/javascript"></script>
 {% endblock %}
 
 {% block stylesheets %}
     <link href="{{ asset('bundles/sgapp/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+
     <link href="{{ asset('bundles/sgdatatables/css/dataTables_bootstrap.css') }}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
