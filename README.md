@@ -9,7 +9,9 @@ Neben dem DatatablesBundle werden noch
 
 Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen:
 
-```html
+```twig
+{# layout.html.twig #}
+
 {% extends '::base.html.twig' %}
 
 {% block title %}AppBundle{% endblock %}
@@ -30,6 +32,10 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
 {% endblock %}
 
 {% block body%}
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
 {% endblock %}
 ```
 
@@ -76,7 +82,7 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
         $factory = $this->get('sg_datatables.factory');
 
         /**
-         * @var \Sg\DatatablesBundle\Datatable\DatatableView $datatableView
+         * @var \Sg\DatatablesBundle\Datatable\AbstractDatatableView $datatableView
          */
         $datatableView = $factory->getDatatableView('Sg\AppBundle\Datatables\PostDatatable');
 
@@ -111,13 +117,13 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
 
     namespace Sg\AppBundle\Datatables;
 
-    use Sg\DatatablesBundle\Datatable\DatatableView;
+    use Sg\DatatablesBundle\Datatable\AbstractDatatableView;
     use Sg\DatatablesBundle\Datatable\Field;
 
     /**
      * Post datatable view class.
      */
-    class PostDatatable extends DatatableView
+    class PostDatatable extends AbstractDatatableView
     {
         /**
          * {@inheritdoc}
@@ -157,7 +163,7 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
 
 {% extends 'SgAppBundle::layout.html.twig' %}
 
-{% block body %}
+{% block content %}
 
     {{ datatable_render(datatable) }}
 

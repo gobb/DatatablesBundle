@@ -29,7 +29,7 @@ class DatatableFactory
      *
      * @param string $datatableViewClass The class name
      *
-     * @return \Sg\DatatablesBundle\Datatable\DatatableView
+     * @return \Sg\DatatablesBundle\Datatable\AbstractDatatableView
      * @throws \Exception
      */
     public function getDatatableView($datatableViewClass)

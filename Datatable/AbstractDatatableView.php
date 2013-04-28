@@ -5,9 +5,9 @@ namespace Sg\DatatablesBundle\Datatable;
 use Twig_Environment as Twig;
 
 /**
- * Datatable view class.
+ * Abstract DatatableView class.
  */
-abstract class DatatableView
+abstract class AbstractDatatableView
 {
     /**
      * A Twig instance.
@@ -168,7 +168,7 @@ abstract class DatatableView
     /**
      * @param Field $field
      *
-     * @return DatatableView
+     * @return AbstractDatatableView
      */
     public function addField($field)
     {
