@@ -78,7 +78,7 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
         /**
          * @var \Sg\DatatablesBundle\Datatable\DatatableView $datatableView
          */
-        $datatableView = $factory->getTable('Sg\AppBundle\Datatables\PostDatatable');
+        $datatableView = $factory->getDatatableView('Sg\AppBundle\Datatables\PostDatatable');
 
         return array(
             'datatable' => $datatableView

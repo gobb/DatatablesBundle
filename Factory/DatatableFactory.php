@@ -25,19 +25,19 @@ class DatatableFactory
     }
 
     /**
-     * Creates a new instance of the datagridViewClass object.
+     * Returns a instance of the datatableViewClass.
      *
-     * @param string $datagridViewClass
+     * @param string $datatableViewClass The class name
      *
      * @return \Sg\DatatablesBundle\Datatable\DatatableView
      * @throws \Exception
      */
-    public function getTable($datagridViewClass)
+    public function getDatatableView($datatableViewClass)
     {
-        if (!class_exists($datagridViewClass)) {
-            throw new \Exception("Class {$datagridViewClass} not found.");
+        if (!class_exists($datatableViewClass)) {
+            throw new \Exception("Class {$datatableViewClass} not found.");
         }
 
-        return new $datagridViewClass($this->twig);
+        return new $datatableViewClass($this->twig);
     }
 }
