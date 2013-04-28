@@ -1,5 +1,8 @@
 # DatatablesBundle
 
+Das DatatablesBundle soll die Zusammenarbeit mit Symfony2 vereinfachen.
+Es verarbeitet die Daten serverseitig, nutzt eine eigene Klasse und Twig bzw. eine Twig-Erweiterung für deren Darstellung.
+
 ## Installation
 
 Neben dem DatatablesBundle werden noch
@@ -110,10 +113,9 @@ Die Einbindung kann dann z.B. über die layout.html.twig (ohne Assetic) erfolgen
 ### DatatableView class
 
 ```php
-
-// PostDatatable.php
-
 <?php
+
+    // PostDatatable.php
 
     namespace Sg\AppBundle\Datatables;
 

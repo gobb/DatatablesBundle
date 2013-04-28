@@ -63,7 +63,7 @@ abstract class AbstractDatatableView
     private $sAjaxSource;
 
     /**
-     * Render actions, true or false,
+     * Render actions, true or false.
      *
      * @var boolean
      */
