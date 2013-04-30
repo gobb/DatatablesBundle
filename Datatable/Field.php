@@ -23,12 +23,12 @@ class Field
     private $sWidth;
 
     /**
-     * @var boolean
+     * @var string
      */
     private $bSearchable;
 
     /**
-     * @var boolean
+     * @var string
      */
     private $bSortable;
 
@@ -44,9 +44,10 @@ class Field
      */
     public function __construct($mData)
     {
-        $this->mData = $mData;
+        $this->mData       = $mData;
+        $this->mRender     = '';
         $this->bSearchable = "true";
-        $this->bSortable = "true";
+        $this->bSortable   = "true";
     }
 
 
@@ -55,7 +56,7 @@ class Field
     //-------------------------------------------------
 
     /**
-     * @param boolean $bSearchable
+     * @param string $bSearchable
      *
      * @return Field
      */
@@ -67,7 +68,7 @@ class Field
     }
 
     /**
-     * @return boolean
+     * @return string
      */
     public function getBSearchable()
     {
@@ -75,7 +76,7 @@ class Field
     }
 
     /**
-     * @param boolean $bSortable
+     * @param string $bSortable
      *
      * @return Field
      */
@@ -87,7 +88,7 @@ class Field
     }
 
     /**
-     * @return boolean
+     * @return string
      */
     public function getBSortable()
     {

@@ -109,20 +109,20 @@ abstract class AbstractDatatableView
      */
     public function __construct(Twig $twig)
     {
-        $this->twig = $twig;
-        $this->template = 'SgDatatablesBundle::default.html.twig';
+        $this->twig        = $twig;
+        $this->template    = 'SgDatatablesBundle::default.html.twig';
         $this->sDomOptions = array(
-            'sDomLength' => 'span4',
-            'sDomFilter' => 'span8',
-            'sDomInfo' => 'span3',
+            'sDomLength'     => 'span4',
+            'sDomFilter'     => 'span8',
+            'sDomInfo'       => 'span3',
             'sDomPagination' => 'span9'
         );
 
-        $this->tableId = 'sg_datatable';
-        $this->tableHeaders = array();
-        $this->fields = array();
-        $this->sAjaxSource = '';
-        $this->actions = false;
+        $this->tableId          = 'sg_datatable';
+        $this->tableHeaders     = array();
+        $this->fields           = array();
+        $this->sAjaxSource      = '';
+        $this->actions          = false;
         $this->customizeOptions = array();
 
         $this->build();
@@ -200,11 +200,11 @@ abstract class AbstractDatatableView
         foreach ($this->fields as $field) {
 
             $property = array(
-                'mData' => $field->getMData(),
-                'mRender' => $field->getMRender(),
-                'sWidth' => $field->getSWidth(),
+                'mData'       => $field->getMData(),
+                'mRender'     => $field->getMRender(),
+                'sWidth'      => $field->getSWidth(),
                 'bSearchable' => $field->getBSearchable(),
-                'bSortable' => $field->getBSortable()
+                'bSortable'   => $field->getBSortable()
             );
 
             array_push($mData, $property);
