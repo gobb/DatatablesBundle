@@ -188,7 +188,7 @@ class DatatableData
 
         $this->response = array();
 
-        $this->prepareFields();
+        $this->prepare();
     }
 
 
@@ -201,7 +201,7 @@ class DatatableData
      *
      * @return DatatableData
      */
-    private function prepareFields()
+    private function prepare()
     {
         $selectFields = array();
         $joins = array();
@@ -406,8 +406,6 @@ class DatatableData
     private function executeQuery()
     {
         $fresults = $this->qb->getQuery()->getResult(Query::HYDRATE_ARRAY);
-
-        var_dump($this->qb->getQuery()->getDQL());
 
         $output = array("aaData" => array());
 
