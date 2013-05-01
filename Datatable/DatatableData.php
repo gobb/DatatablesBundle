@@ -40,6 +40,11 @@ class DatatableData
     private $serializer;
 
     /**
+     * @var object
+     */
+    private $logger;
+
+    /**
      * Information for DataTables to use for rendering
      *
      * @var int
@@ -137,11 +142,6 @@ class DatatableData
      */
     private $response;
 
-    /**
-     * @var object
-     */
-    private $logger;
-
 
     //-------------------------------------------------
     // Ctor.
@@ -158,32 +158,34 @@ class DatatableData
      */
     public function __construct($requestParams, ClassMetadata $metadata, EntityManager $em, $serializer, $logger)
     {
-        $this->requestParams = $requestParams;
-        $this->metadata = $metadata;
-        $this->em = $em;
-        $this->serializer = $serializer;
-        $this->logger = $logger;
+        $this->requestParams  = $requestParams;
+        $this->metadata       = $metadata;
+        $this->em             = $em;
+        $this->serializer     = $serializer;
+        $this->logger         = $logger;
 
-        $this->sEcho = (int) $this->requestParams['sEcho'];
-        $this->sSearch = $this->requestParams['sSearch'];
-        $this->iDisplayStart = $this->requestParams['iDisplayStart'];
+        $this->sEcho          = (int) $this->requestParams['sEcho'];
+        $this->sSearch        = $this->requestParams['sSearch'];
+        $this->iDisplayStart  = $this->requestParams['iDisplayStart'];
         $this->iDisplayLength = $this->requestParams['iDisplayLength'];
-        $this->bRegex = $this->requestParams['bRegex'];
-        $this->iColumns = $this->requestParams['iColumns'];
-        $this->iSortingCols = $this->requestParams['iSortingCols'];
-        $this->iSortCol0 = $this->requestParams['iSortCol_0'];
-        $this->sSortDir0 = $this->requestParams['sSortDir_0'];
+        $this->bRegex         = $this->requestParams['bRegex'];
+        $this->iColumns       = $this->requestParams['iColumns'];
+        $this->iSortingCols   = $this->requestParams['iSortingCols'];
+        $this->iSortCol0      = $this->requestParams['iSortCol_0'];
+        $this->sSortDir0      = $this->requestParams['sSortDir_0'];
 
-        $identifiers = $this->metadata->getIdentifierFieldNames();
+        $this->tableName      = $metadata->getTableName();
+        $this->selectFields   = array();
+        $this->joins          = array();
+        $this->qb             = $this->em->createQueryBuilder();
+
+        $identifiers                = $this->metadata->getIdentifierFieldNames();
         $this->rootEntityIdentifier = array_shift($identifiers);
 
-        $this->selectFields = array();
-        $this->joins = array();
-        $this->tableName = $metadata->getTableName();
-        $this->qb = $this->em->createQueryBuilder();
         $this->callbacks = array(
             'WhereBuilder' => array(),
             );
+
         $this->response = array();
 
         $this->prepareFields();
@@ -210,23 +212,23 @@ class DatatableData
                 $field = $this->requestParams['mDataProp_' . $i];
 
                 // found association?
-                if (strstr($field, '_') == true) {
+                if (strstr($field, '_') !== false) {
 
                     // separate fields
                     $twoFieldsArray = explode('_', $field, 2);
-                    $sourceField = $twoFieldsArray[0];
+                    $targetEntity = $twoFieldsArray[0];
                     $targetField = $twoFieldsArray[1];
 
                     // check association
-                    if ($this->metadata->hasAssociation($sourceField) === true) {
+                    if ($this->metadata->hasAssociation($targetEntity) === true) {
 
-                        $targetClass = $this->metadata->getAssociationTargetClass($sourceField);
+                        $targetClass = $this->metadata->getAssociationTargetClass($targetEntity);
                         $targetMeta = $this->em->getClassMetadata($targetClass);
                         $targetTableName = $targetMeta->getTableName();
 
-                        $selectFields[] = $targetTableName . '.' . $targetField . ' AS ' . $sourceField . '_' . $targetField;
+                        $selectFields[] = $targetTableName . '.' . $targetField . ' AS ' . $field;
                         $joins[] = array(
-                            'source' => $this->tableName . '.' . $sourceField,
+                            'source' => $this->tableName . '.' . $targetEntity,
                             'target' => $targetTableName
                         );
                     }
@@ -404,6 +406,8 @@ class DatatableData
     private function executeQuery()
     {
         $fresults = $this->qb->getQuery()->getResult(Query::HYDRATE_ARRAY);
+
+        var_dump($this->qb->getQuery()->getDQL());
 
         $output = array("aaData" => array());
 
