@@ -1,7 +1,7 @@
 {
     "name": "sg/datatablesbundle",
     "description": "Symfony2 Datatables For Doctrine Entities",
-    "keywords": ["Symfony2", "Datatables"],
+    "keywords": ["Symfony2", "Datatables", "Grid", "Table"],
     "homepage": "https://github.com/stwe/DatatablesBundle",
     "license": "MIT",
     "type": "symfony-bundle",
@@ -11,10 +11,13 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "symfony/framework-bundle": ">=2.1,<2.3-dev"
     },
     "suggest": {
-        "jms/serializer-bundle": "Advanced JSON encoding capabilities"
+        "components/jquery": "Add jQuery support, requires dev-master",
+        "jms/serializer-bundle": "Add support for advanced serialization capabilities, requires *",
+        "twitter/bootstrap": "Add Bootstrap Css support, requires  v2.3.1"
     },
     "target-dir": "Sg/DatatablesBundle",
     "autoload": {
