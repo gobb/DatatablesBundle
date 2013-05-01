@@ -197,15 +197,40 @@ class DatatableData
     //-------------------------------------------------
 
     /**
+     * Add select.
+     *
+     * @param string $select
+     *
+     * @return DatatableData
+     */
+    private function addSelect($select)
+    {
+        $this->selectFields[] = $select;
+
+        return $this;
+    }
+
+    /**
+     * Add join.
+     *
+     * @param array $join
+     *
+     * @return DatatableData
+     */
+    private function addJoin(array $join)
+    {
+        $this->joins[] = $join;
+
+        return $this;
+    }
+
+    /**
      * Prepare fields from mDataProp_ for createQueryBuilder.
      *
      * @return DatatableData
      */
     private function prepare()
     {
-        $selectFields = array();
-        $joins = array();
-
         for ($i = 0; $i < $this->iColumns; $i++) {
             if ($this->requestParams['mDataProp_' . $i] != null) {
 
@@ -226,24 +251,23 @@ class DatatableData
                         $targetMeta = $this->em->getClassMetadata($targetClass);
                         $targetTableName = $targetMeta->getTableName();
 
-                        $selectFields[] = $targetTableName . '.' . $targetField . ' AS ' . $field;
-                        $joins[] = array(
-                            'source' => $this->tableName . '.' . $targetEntity,
-                            'target' => $targetTableName
+                        $this->addSelect($targetTableName . '.' . $targetField . ' AS ' . $field);
+                        $this->addJoin(
+                            array(
+                                'source' => $this->tableName . '.' . $targetEntity,
+                                'target' => $targetTableName
+                            )
                         );
                     }
 
                 } else {
 
-                    $selectFields[] = $this->tableName . '.' . $field;
+                    $this->addSelect($this->tableName . '.' . $field);
 
                 }
 
             }
         }
-
-        $this->selectFields = $selectFields;
-        $this->joins = $joins;
 
         return $this;
     }
