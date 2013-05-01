@@ -65,9 +65,17 @@
                                     },
                                 {% endif %}
 
-                                "bSortable": "{{ field.bSortable }}",
+                                {% if field.bSortable is empty %}
+                                    "bSortable": false,
+                                {% else %}
+                                    "bSortable": true,
+                                {% endif %}
 
-                                "bSearchable": "{{ field.bSearchable }}",
+                                {% if field.bSearchable is empty %}
+                                    "bSearchable": false,
+                                {% else %}
+                                    "bSearchable": true,
+                                {% endif %}
 
                                 {% if field.sWidth != '' %}
                                     "sWidth": "{{ field.sWidth }}"

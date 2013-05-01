@@ -23,12 +23,12 @@ class Field
     private $sWidth;
 
     /**
-     * @var string
+     * @var boolean
      */
     private $bSearchable;
 
     /**
-     * @var string
+     * @var boolean
      */
     private $bSortable;
 
@@ -46,8 +46,8 @@ class Field
     {
         $this->mData       = $mData;
         $this->mRender     = '';
-        $this->bSearchable = "true";
-        $this->bSortable   = "true";
+        $this->bSearchable = true;
+        $this->bSortable   = true;
     }
 
 
@@ -56,7 +56,7 @@ class Field
     //-------------------------------------------------
 
     /**
-     * @param string $bSearchable
+     * @param boolean $bSearchable
      *
      * @return Field
      */
@@ -68,7 +68,7 @@ class Field
     }
 
     /**
-     * @return string
+     * @return boolean
      */
     public function getBSearchable()
     {
@@ -76,7 +76,7 @@ class Field
     }
 
     /**
-     * @param string $bSortable
+     * @param boolean $bSortable
      *
      * @return Field
      */
@@ -88,7 +88,7 @@ class Field
     }
 
     /**
-     * @return string
+     * @return boolean
      */
     public function getBSortable()
     {
