@@ -280,7 +280,7 @@ class DatatableData
     }
 
     /**
-     * Count all results.
+     * Query results before filtering.
      *
      * @return int
      */
@@ -289,6 +289,23 @@ class DatatableData
         $qb = $this->em->createQueryBuilder();
         $qb->select('count(' . $this->tableName . '.' . $this->rootEntityIdentifier . ')');
         $qb->from($this->metadata->getName(), $this->tableName);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Query results after filtering.
+     *
+     * @return int
+     */
+    private function getCountFilteredResults()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('count(distinct ' . $this->tableName . '.' . $this->rootEntityIdentifier . ')');
+        $qb->from($this->metadata->getName(), $this->tableName);
+
+        $this->setLeftJoin($qb);
+        $this->setWhere($qb);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
@@ -313,12 +330,14 @@ class DatatableData
     /**
      * Set leftJoin statement.
      *
+     * @param QueryBuilder $qb
+     *
      * @return DatatableData
      */
-    private function setLeftJoin()
+    private function setLeftJoin(QueryBuilder $qb)
     {
         foreach ($this->joins as $join) {
-            $this->qb->leftJoin($join['source'], $join['target']);
+            $qb->leftJoin($join['source'], $join['target']);
         }
 
         return $this;
@@ -327,29 +346,28 @@ class DatatableData
     /**
      * Set where statement.
      *
+     * @param QueryBuilder $qb
+     *
      * @return DatatableData
      */
-    private function setWhere()
+    private function setWhere(QueryBuilder $qb)
     {
-        // global
+        // global search
         if (isset($this->requestParams['sSearch']) && $this->sSearch != '') {
 
-            $orExpr = $this->qb->expr()->orX();
+            $orExpr = $qb->expr()->orX();
 
             for ($i = 0; $i < $this->iColumns; $i++) {
 
                 if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === 'true') {
-
                     $searchField = $this->allFields[$i];
-
-                    $orExpr->add($this->qb->expr()->like($searchField, "?$i"));
-
-                    $this->qb->setParameter($i, "%" . $this->sSearch . "%");
+                    $orExpr->add($qb->expr()->like($searchField, "?$i"));
+                    $qb->setParameter($i, "%" . $this->sSearch . "%");
                 }
 
             }
 
-            $this->qb->where($orExpr);
+            $qb->where($orExpr);
         }
 
         return $this;
@@ -414,8 +432,8 @@ class DatatableData
     private function buildQuery()
     {
         $this->setSelect();
-        $this->setLeftJoin();
-        $this->setWhere();
+        $this->setLeftJoin($this->qb);
+        $this->setWhere($this->qb);
         $this->setWhereCallbacks();
         $this->setOrderBy();
         $this->setLimit();
@@ -441,7 +459,7 @@ class DatatableData
         $outputHeader = array(
             "sEcho" => $this->sEcho,
             "iTotalRecords" => $this->getCountAllResults(),
-            "iTotalDisplayRecords" => $this->getCountAllResults()
+            "iTotalDisplayRecords" => $this->getCountFilteredResults()
         );
 
         $this->response = array_merge($outputHeader, $output);
