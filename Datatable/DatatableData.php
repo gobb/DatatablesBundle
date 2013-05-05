@@ -356,7 +356,7 @@ class DatatableData
     }
 
     /**
-     * Set Where callback functions.
+     * Set where callback functions.
      *
      * @return DatatableData
      */
@@ -372,18 +372,18 @@ class DatatableData
     }
 
     /**
-     * Set order statement.
+     * Set orderBy statement.
      *
      * @return DatatableData
      */
-    private function setOrder()
+    private function setOrderBy()
     {
         if (isset($this->iSortCol0)) {
             for ($i = 0; $i < intval($this->requestParams['iSortingCols']); $i++) {
-                if ($this->requestParams['bSortable_'.intval($this->requestParams['iSortCol_'. $i])] == 'true') {
+                if ($this->requestParams['bSortable_'.intval($this->requestParams['iSortCol_' . $i])] === 'true') {
                     $this->qb->addOrderBy(
-                        $this->selectFields[$this->requestParams['iSortCol_'.$i]],
-                        $this->requestParams['sSortDir_'.$i]
+                        $this->allFields[$this->requestParams['iSortCol_' . $i]],
+                        $this->requestParams['sSortDir_' . $i]
                     );
                 }
             }
@@ -417,7 +417,7 @@ class DatatableData
         $this->setJoins();
         $this->setFilter();
         $this->setWhereCallbacks();
-        //$this->setOrder();
+        $this->setOrderBy();
         $this->setLimit();
 
         return $this;
