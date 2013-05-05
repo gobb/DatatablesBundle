@@ -197,20 +197,6 @@ class DatatableData
     //-------------------------------------------------
 
     /**
-     * Add select.
-     *
-     * @param string $select
-     *
-     * @return DatatableData
-     */
-    private function addSelect($select)
-    {
-        $this->selectFields[] = $select;
-
-        return $this;
-    }
-
-    /**
      * Add join.
      *
      * @param array $join
@@ -231,27 +217,36 @@ class DatatableData
      */
     private function prepare()
     {
+        $this->selectFields[$this->tableName][] = $this->rootEntityIdentifier;
+
         for ($i = 0; $i < $this->iColumns; $i++) {
             if ($this->requestParams['mDataProp_' . $i] != null) {
 
                 $field = $this->requestParams['mDataProp_' . $i];
 
-                // found association?
-                if (strstr($field, '_') !== false) {
+                // association
+                if (strstr($field, '.') !== false) {
 
                     // separate fields
-                    $twoFieldsArray = explode('_', $field, 2);
+                    $twoFieldsArray = explode('.', $field, 2);
                     $targetEntity = $twoFieldsArray[0];
                     $targetField = $twoFieldsArray[1];
 
-                    // check association
+                    // get association
                     if ($this->metadata->hasAssociation($targetEntity) === true) {
 
-                        $targetClass = $this->metadata->getAssociationTargetClass($targetEntity);
-                        $targetMeta = $this->em->getClassMetadata($targetClass);
-                        $targetTableName = $targetMeta->getTableName();
+                        $targetClass          = $this->metadata->getAssociationTargetClass($targetEntity);
+                        $targetMeta           = $this->em->getClassMetadata($targetClass);
+                        $targetTableName      = $targetMeta->getTableName();
+                        $targetIdentifiers    = $this->metadata->getIdentifierFieldNames();
+                        $targetRootIdentifier = array_shift($targetIdentifiers);
 
-                        $this->addSelect($targetTableName . '.' . $targetField . ' AS ' . $field);
+                        $this->selectFields[$targetTableName][] = $targetRootIdentifier;
+
+                        if ($targetField !== $targetRootIdentifier) {
+                            array_push($this->selectFields[$targetTableName], $targetField);
+                        }
+
                         $this->addJoin(
                             array(
                                 'source' => $this->tableName . '.' . $targetEntity,
@@ -262,7 +257,9 @@ class DatatableData
 
                 } else {
 
-                    $this->addSelect($this->tableName . '.' . $field);
+                    if ($field !== $this->rootEntityIdentifier) {
+                        array_push($this->selectFields[$this->tableName], $field);
+                    }
 
                 }
 
@@ -293,7 +290,11 @@ class DatatableData
      */
     private function setSelect()
     {
-        $this->qb->select(implode(',', $this->selectFields));
+        foreach ($this->selectFields as $key => $value) {
+            // example: $qb->select('partial comment.{id, title}, partial post.{id, title}');
+            $this->qb->addSelect('partial ' . $key . '.{' . implode(',', $this->selectFields[$key]) . '}');
+        }
+
         $this->qb->from($this->metadata->getName(), $this->tableName);
 
         return $this;
@@ -416,7 +417,7 @@ class DatatableData
         $this->setJoins();
         $this->setFilter();
         $this->setWhereCallbacks();
-        $this->setOrder();
+        //$this->setOrder();
         $this->setLimit();
 
         return $this;
