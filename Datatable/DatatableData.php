@@ -311,11 +311,11 @@ class DatatableData
     }
 
     /**
-     * Set joins statements.
+     * Set leftJoin statement.
      *
      * @return DatatableData
      */
-    private function setJoins()
+    private function setLeftJoin()
     {
         foreach ($this->joins as $join) {
             $this->qb->leftJoin($join['source'], $join['target']);
@@ -329,7 +329,7 @@ class DatatableData
      *
      * @return DatatableData
      */
-    private function setFilter()
+    private function setWhere()
     {
         // global
         if (isset($this->requestParams['sSearch']) && $this->sSearch != '') {
@@ -414,8 +414,8 @@ class DatatableData
     private function buildQuery()
     {
         $this->setSelect();
-        $this->setJoins();
-        $this->setFilter();
+        $this->setLeftJoin();
+        $this->setWhere();
         $this->setWhereCallbacks();
         $this->setOrderBy();
         $this->setLimit();
