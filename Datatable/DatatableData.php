@@ -120,6 +120,11 @@ class DatatableData
     /**
      * @var array
      */
+    private $allFields;
+
+    /**
+     * @var array
+     */
     private $joins;
 
     /**
@@ -176,6 +181,7 @@ class DatatableData
 
         $this->tableName      = $metadata->getTableName();
         $this->selectFields   = array();
+        $this->allFields      = array();
         $this->joins          = array();
         $this->qb             = $this->em->createQueryBuilder();
 
@@ -247,6 +253,8 @@ class DatatableData
                             array_push($this->selectFields[$targetTableName], $targetField);
                         }
 
+                        $this->allFields[] = $targetTableName . '.' . $targetField;
+
                         $this->addJoin(
                             array(
                                 'source' => $this->tableName . '.' . $targetEntity,
@@ -260,6 +268,8 @@ class DatatableData
                     if ($field !== $this->rootEntityIdentifier) {
                         array_push($this->selectFields[$this->tableName], $field);
                     }
+
+                    $this->allFields[] = $this->tableName . '.' . $field;
 
                 }
 
@@ -301,7 +311,7 @@ class DatatableData
     }
 
     /**
-     * Set joins.
+     * Set joins statements.
      *
      * @return DatatableData
      */
@@ -330,19 +340,9 @@ class DatatableData
 
                 if (isset($this->requestParams['bSearchable_' . $i]) && $this->requestParams['bSearchable_' . $i] === 'true') {
 
-                    // delete "AS" from selectFields[]
-                    $string = $this->selectFields[$i];
-                    $pos = strpos($string, 'AS');
-                    $searchField = substr($string, 0, $pos);
+                    $searchField = $this->allFields[$i];
 
-                    if ($pos === false) {
-                        $searchField = $this->selectFields[$i];
-                    }
-
-                    $orExpr->add($this->qb->expr()->like(
-                        $searchField,
-                        "?$i"
-                    ));
+                    $orExpr->add($this->qb->expr()->like($searchField, "?$i"));
 
                     $this->qb->setParameter($i, "%" . $this->sSearch . "%");
                 }
