@@ -290,6 +290,8 @@ class DatatableData
         $qb->select('count(' . $this->tableName . '.' . $this->rootEntityIdentifier . ')');
         $qb->from($this->metadata->getName(), $this->tableName);
 
+        $this->setWhereCallbacks($qb);
+
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
@@ -306,6 +308,7 @@ class DatatableData
 
         $this->setLeftJoin($qb);
         $this->setWhere($qb);
+        $this->setWhereCallbacks($qb);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
@@ -330,7 +333,7 @@ class DatatableData
     /**
      * Set leftJoin statement.
      *
-     * @param QueryBuilder $qb
+     * @param QueryBuilder $qb A QueryBuilder instance
      *
      * @return DatatableData
      */
@@ -346,7 +349,7 @@ class DatatableData
     /**
      * Set where statement.
      *
-     * @param QueryBuilder $qb
+     * @param QueryBuilder $qb A QueryBuilder instance
      *
      * @return DatatableData
      */
@@ -376,13 +379,15 @@ class DatatableData
     /**
      * Set where callback functions.
      *
+     * @param QueryBuilder $qb A QueryBuilder instance
+     *
      * @return DatatableData
      */
-    private function setWhereCallbacks()
+    private function setWhereCallbacks(QueryBuilder $qb)
     {
         if (!empty($this->callbacks['WhereBuilder'])) {
             foreach ($this->callbacks['WhereBuilder'] as $callback) {
-                $callback($this->qb);
+                $callback($qb);
             }
         }
 
@@ -434,7 +439,7 @@ class DatatableData
         $this->setSelect();
         $this->setLeftJoin($this->qb);
         $this->setWhere($this->qb);
-        $this->setWhereCallbacks();
+        $this->setWhereCallbacks($this->qb);
         $this->setOrderBy();
         $this->setLimit();
 
